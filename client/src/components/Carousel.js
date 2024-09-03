@@ -2,10 +2,10 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 const Carousel = ({ images, id }) => {
-  const { theme } = useSelector(state => state);
-    const isActive = index => {
-        if(index === 0) return "active";
-    }
+  const { theme } = useSelector((state) => state);
+  const isActive = (index) => {
+    if (index === 0) return "active";
+  };
   return (
     <div id={`image${id}`} className="carousel slide" data-bs-ride="carousel">
       <div className="carousel-indicators">
@@ -23,21 +23,12 @@ const Carousel = ({ images, id }) => {
       <div className="carousel-inner">
         {images.map((img, index) => (
           <div key={index} className={`carousel-item ${isActive(index)}`}>
-            {img.url.match(/video/i) ? (
-              <video
-                controls
-                style={{ filter: theme ? "invert(1)" : "invert(0)" }}
-                src={img.url}
-                className="d-block w-100"
-                alt={img.url}
-              />
+            {img && img.url && img.url.match(/video/i) ? (
+              <video controls>
+                <source src={img.url} type="video/mp4" />
+              </video>
             ) : (
-              <img
-                style={{ filter: theme ? "invert(1)" : "invert(0)" }}
-                src={img.url}
-                className="d-block w-100"
-                alt={img.url}
-              />
+              <img src={img.url} alt={`carousel-item-${index}`} />
             )}
           </div>
         ))}
@@ -67,3 +58,22 @@ const Carousel = ({ images, id }) => {
 };
 
 export default Carousel;
+
+{
+  /* {img.url.match(/video/i) ? (
+              <video
+                controls
+                style={{ filter: theme ? "invert(1)" : "invert(0)" }}
+                src={img.url}
+                className="d-block w-100"
+                alt={img.url}
+              />
+            ) : (
+              <img
+                style={{ filter: theme ? "invert(1)" : "invert(0)" }}
+                src={img.url}
+                className="d-block w-100"
+                alt={img.url}
+              />
+            )} */
+}
