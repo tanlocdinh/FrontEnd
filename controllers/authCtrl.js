@@ -40,13 +40,13 @@ const authCtrl = {
       const access_token = createAccessToken({ id: newUser._id });
       const refresh_token = createRefreshToken({ id: newUser._id });
 
-      res.cookie("refreshtoken", refresh_token, {
+      await res.cookie("refreshtoken", refresh_token, {
         httpOnly: true,
         path: "/api/refresh_token",
         maxAge: 30 * 24 * 60 * 60 * 1000, //validity of 30 days
       });
 
-      res.json({
+      await res.json({
         msg: "Registered Successfully!",
         access_token,
         user: {
@@ -57,15 +57,15 @@ const authCtrl = {
 
       await newUser.save();
 
-      res.json({ msg: "registered" });
+      await res.json({ msg: "registered" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      // await res.status(500).json({ msg: err.message });
     }
   },
 
   changePassword: async (req, res) => {
     try {
-      const {oldPassword, newPassword} = req.body;
+      const { oldPassword, newPassword } = req.body;
 
       const user = await Users.findOne({ _id: req.user._id });
 
@@ -81,11 +81,13 @@ const authCtrl = {
       }
 
       const newPasswordHash = await bcrypt.hash(newPassword, 12);
-      
-      await Users.findOneAndUpdate({_id: req.user._id}, {password: newPasswordHash });
 
-      res.json({msg: "Password updated successfully."})
+      await Users.findOneAndUpdate(
+        { _id: req.user._id },
+        { password: newPasswordHash }
+      );
 
+      res.json({ msg: "Password updated successfully." });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -123,11 +125,8 @@ const authCtrl = {
         email,
         password: passwordHash,
         gender,
-        role
+        role,
       });
-
-
-
 
       await newUser.save();
 
@@ -161,7 +160,7 @@ const authCtrl = {
       res.cookie("refreshtoken", refresh_token, {
         httpOnly: true,
         path: "/api/refresh_token",
-        sameSite: 'lax',
+        sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, //validity of 30 days
       });
 
@@ -229,7 +228,7 @@ const authCtrl = {
       const rf_token = req.cookies.refreshtoken;
 
       if (!rf_token) {
-        return res.status(400).json({ msg: "Please login again." });
+        res.status(400).json({ msg: "Please login again." });
       }
       jwt.verify(
         rf_token,
